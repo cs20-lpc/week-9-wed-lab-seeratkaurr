@@ -1,6 +1,13 @@
 template <typename T>
 ArrayQueue<T>::ArrayQueue(int i) {
-    // TODO
+    if (i <= 0)
+        throw string("Invalid max size for queue");
+
+    maxSize = i;
+    buffer = new T[maxSize];
+    this->length = 0;
+    frontIndex = 0;
+    backIndex = -1;
 }
 
 template <typename T>
@@ -23,51 +30,67 @@ ArrayQueue<T>::~ArrayQueue() {
 }
 
 template <typename T>
-T ArrayQueue<T>::back() const {
-    // TODO
+void ArrayQueue<T>::copy(const ArrayQueue<T>& copyObj) {
+    maxSize = copyObj.maxSize;
+    buffer = new T[maxSize];
+    this->length = copyObj.length;
+    frontIndex = copyObj.frontIndex;
+    backIndex = copyObj.backIndex;
+
+    for (int i = 0; i < copyObj.length; i++) {
+        int idx = (copyObj.frontIndex + i) % maxSize;
+        buffer[idx] = copyObj.buffer[idx];
+    }
 }
 
 template <typename T>
 void ArrayQueue<T>::clear() {
-    // TODO
-}
-
-template <typename T>
-void ArrayQueue<T>::copy(const ArrayQueue<T>& copyObj) {
-    // TODO
-}
-
-template <typename T>
-void ArrayQueue<T>::dequeue() {
-    // TODO
+    delete[] buffer;
+    buffer = nullptr;
+    this->length = 0;
+    frontIndex = 0;
+    backIndex = -1;
+    maxSize = 0;
 }
 
 template <typename T>
 void ArrayQueue<T>::enqueue(const T& elem) {
-    // TODO
+    if (isFull())
+        throw string("enqueue on full queue");
+
+
+    backIndex = (backIndex + 1) % maxSize;
+    buffer[backIndex] = elem;
+    this->length++;
+}
+
+template <typename T>
+void ArrayQueue<T>::dequeue() {
+    if (isEmpty())
+        throw string("dequeue on empty queue");
+
+    frontIndex = (frontIndex + 1) % maxSize;
+    this->length--;
+
+    
+    if (isEmpty()) {
+        frontIndex = 0;
+        backIndex = -1;
+    }
 }
 
 template <typename T>
 T ArrayQueue<T>::front() const {
-    // TODO
+    if (isEmpty())
+        throw string("front on empty queue");
+    return buffer[frontIndex];
 }
 
 template <typename T>
-int ArrayQueue<T>::getLength() const {
-    return this->length;
+T ArrayQueue<T>::back() const {
+    if (isEmpty())
+        throw string("back on empty queue");
+    return buffer[backIndex];
 }
 
-template <typename T>
-int ArrayQueue<T>::getMaxSize() const {
-    return maxSize;
-}
 
-template <typename T>
-bool ArrayQueue<T>::isEmpty() const {
-    return this->length == 0;
-}
-
-template <typename T>
-bool ArrayQueue<T>::isFull() const {
-    return this->length == maxSize;
-}
